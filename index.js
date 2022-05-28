@@ -18,6 +18,8 @@ async function run() {
     try {
         await client.connect();
         const itemCollection = client.db('uniStoreHouse').collection('item');
+        const reviewCollection = client.db('CarMad').collection('reviews');
+        const ordersCollection = client.db('CarMad').collection('orders');
         app.get('/item', async (req, res) => {
             const query = {};
             const cursor = itemCollection.find(query);
@@ -30,13 +32,36 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const item = await itemCollection.findOne(query);
             res.send(item);
-        })
+        });
+        app.get('/orders', async (req, res) => {
+            const query = {};
+            const cursor = ordersCollection.find(query);
+            const orders = await cursor.toArray();
+            res.send(orders);
+        });
         //  delete item 
         app.delete('/item/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await itemCollection.deleteOne(query);
             res.send(result);
+        });
+
+        app.get('/reviews', async (req, res) => {
+            const query = {};
+            const cursor = reviewCollection.find(query);
+            const orders = await cursor.toArray();
+            res.send(orders);
+        });
+        app.post('/orders', async (req, res) => {
+            const newOrder = req.body;
+            const result = await ordersCollection.insertOne(newOrder);
+            res.send(result)
+        });
+        app.post('/reviews', async (req, res) => {
+            const newOrder = req.body;
+            const result = await reviewCollection.insertOne(newOrder);
+            res.send(result)
         })
 
 
